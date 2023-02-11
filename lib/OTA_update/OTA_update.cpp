@@ -6,7 +6,7 @@
 #define OTAPATH         "/"// Путь, который будем дописывать после ip адреса в браузере.
 #define SERVERPORT      80         // Порт для входа, он стандартный 80 это порт http 
 
-const char* ssid = "196";
+const char* ssid = "196_kit";
 const char* password = "23111970";
 
 IPAddress ip(192,168,0,201);  //статический IP
