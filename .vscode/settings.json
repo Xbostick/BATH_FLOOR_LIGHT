@@ -10,5 +10,6 @@
         "string_view": "cpp",
         "initializer_list": "cpp",
         "ranges": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "C:/work/BATH_FLOOR_LIGHT/.pio/libdeps/nodemcuv2/FastLED"
 }
