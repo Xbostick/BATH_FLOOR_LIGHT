@@ -54,7 +54,7 @@ void handle_index(){
 
 
 void setup_server(const char* ssid, const char* password){
-    Serial.print("Connecting to the Newtork");
+    Serial.print("Connecting to the Network");
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED)
     {
@@ -66,7 +66,7 @@ void setup_server(const char* ssid, const char* password){
 
     Serial.print("IP Address of network: "); // Prints IP address on Serial Monitor
     Serial.println(WiFi.localIP());
-    Serial.print("Copy and paste the following URL: https://");
+    Serial.print("Copy and paste the following URL: http://");
     Serial.print(WiFi.localIP());
     Serial.println("/");
     WiFi.begin(ssid, password);
