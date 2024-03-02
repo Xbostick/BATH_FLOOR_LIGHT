@@ -3,7 +3,7 @@
 
 #define OTAUSER         "admin"    // Логин для входа в OTA
 #define OTAPASSWORD     "admin"    // Пароль для входа в ОТА
-#define OTAPATH         "/"// Путь, который будем дописывать после ip адреса в браузере.
+#define OTAPATH         "/UPDATE"// Путь, который будем дописывать после ip адреса в браузере.
 #define SERVERPORT      80         // Порт для входа, он стандартный 80 это порт http 
 
 const char* ssid = "196_kit";
