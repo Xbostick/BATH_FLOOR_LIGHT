@@ -8,7 +8,8 @@
 #include <EEPROM.h>
 
 FASTLED_USING_NAMESPACE
-#define NUM_LEDS 10
+#define NUM_LEDS1 130
+#define NUM_LEDS2 200
 #define NOISE_PIN A0
 #define LED_PIN1 D2
 #define LED_PIN2 D3
@@ -19,8 +20,8 @@ bool RDY2USE = 1;
 bool SAFEMODE = 1;
 uint8_t count = 0;
 
-CRGB leds1[NUM_LEDS];
-CRGB leds2[NUM_LEDS];
+CRGB leds1[NUM_LEDS1];
+CRGB leds2[NUM_LEDS2];
 
 
 int LED = 16; // led connected to D0
@@ -87,11 +88,13 @@ void server_loop(){
 void FastLED_loop(){
   if  (ServerCmdChange != IS_ON)  {
     if (IS_ON){
-      fill_solid(leds1,NUM_LEDS,CRGB::White);
+      fill_solid(leds1,NUM_LEDS1,CRGB::White);
+      fill_solid(leds2,NUM_LEDS2,CRGB::White);
       FastLED.show();
      }
     else{
-      fill_solid(leds1,NUM_LEDS,CRGB::Black);
+      fill_solid(leds1,NUM_LEDS1,CRGB::Black);
+      fill_solid(leds2,NUM_LEDS2,CRGB::Black);
       FastLED.show();
     }
     IS_ON = ServerCmdChange;
@@ -130,8 +133,8 @@ void setup(){
   setup_server(ssid,password);
 
   if (RDY2USE){
-    FastLED.addLeds< WS2812B, LED_PIN1, GRB>(leds1, NUM_LEDS).setCorrection( TypicalLEDStrip );;
-    FastLED.addLeds< WS2812B, LED_PIN2, GRB>(leds2, NUM_LEDS).setCorrection( TypicalLEDStrip );;
+    FastLED.addLeds< WS2812B, LED_PIN1, GRB>(leds1, NUM_LEDS1).setCorrection( TypicalLEDStrip );;
+    FastLED.addLeds< WS2812B, LED_PIN2, GRB>(leds2, NUM_LEDS2).setCorrection( TypicalLEDStrip );;
     FastLED.setMaxPowerInVoltsAndMilliamps(5,5000);
     pinMode(LED_PIN1,OUTPUT);
     pinMode(LED_PIN2,OUTPUT);
@@ -150,6 +153,9 @@ void loop(){
   
   if ((millis() > 30000) and SAFEMODE) {
     SAFEMODE = false;
+    digitalWrite(LED,1);
+    delay(500);
+    digitalWrite(LED,0);
     DisableSafeMode();
   };
     
