@@ -16,10 +16,11 @@ FASTLED_USING_NAMESPACE
 #define LED_PIN2 D3
 
 bool ServerCmdChange = 0;
-bool IS_ON = 0;
+bool IS_ON = 1;
 bool RDY2USE = 1;
 bool SAFEMODE = 1;
 uint8_t count = 0;
+uint32_t main_color = 0x00;
 
 CRGB leds1[NUM_LEDS1];
 CRGB leds2[NUM_LEDS2];
@@ -37,31 +38,34 @@ const char* password = "23111970";
 ESP8266WebServer HttpServer(SERVERPORT);
 ESP8266HTTPUpdateServer httpUpdater;
 
+uint32_t str_to_uint32_t(const char* str){
+  uint32_t new_uint = 0;
+  int ch_2_int = 0;
+  for(int i = 1; i < strlen(str); i++){
+    // new_uint += int(str[i]);
+    ch_2_int = int(str[i]);
+    if (ch_2_int < 70) 
+      new_uint += (ch_2_int - 48) * pow(16,strlen(str) - i - 1);
+    else
+      new_uint += (ch_2_int - 87) * pow(16,strlen(str) - i - 1);
+  }
+
+  return new_uint;
+}
+
 void handle_index(){
 // /╲/\[☉﹏☉]/\╱\ <-- Паук! Ааа! 🕷️  
   Serial.print("comming\n");
-  String message;
-  for (int i = 0; i < HttpServer.args(); i++) {
-        message += "Arg nº" + (String)i + " –> ";
-        message += HttpServer.argName(i) + ": ";
-        message += HttpServer.arg(i) + "\n";
-        } 
- 
-  Serial.println(HttpServer.arg("plain"));
-
-  DynamicJsonDocument doc(2048);
-  deserializeJson(doc, HttpServer.arg("plain"));
-  Serial.println(doc["color"].as<String>());
-  Serial.println(doc.as<String>());
-  
+  if (HttpServer.hasArg("plain")){
+    StaticJsonDocument<200> doc;
+    deserializeJson(doc, HttpServer.arg("plain"));
+    const char* color = doc["color"].as<const char*>();
+    // get the JsonObject in the JsonDocument
+    main_color = str_to_uint32_t(color);
+    Serial.print(main_color);
+  }
   HttpServer.send(200, "text/html", index_page);
-}
-
-void handle_json(){
-  DynamicJsonDocument doc(2048);
-  deserializeJson(doc, HttpServer.arg('color'));
-  Serial.println(doc["color"].as<String>());
-
+  
 }
 
 void handle_switcher(){
@@ -99,7 +103,7 @@ void setup_server(const char* ssid, const char* password){
     HttpServer.on("/", handle_index);
     if (RDY2USE){
       HttpServer.on("/LED=SWITCH", handle_switcher);
-      HttpServer.on("/", HTTP_POST, handle_json);}
+    }
 
     HttpServer.begin();
 }
@@ -111,8 +115,8 @@ void server_loop(){
 void FastLED_loop(){
   if  (ServerCmdChange != IS_ON)  {
     if (IS_ON){
-      fill_solid(leds1,NUM_LEDS1,CRGB::White);
-      fill_solid(leds2,NUM_LEDS2,CRGB::White);
+      fill_solid(leds1,NUM_LEDS1,CRGB(main_color));
+      fill_solid(leds2,NUM_LEDS2,CRGB(main_color));
       FastLED.show();
      }
     else{
@@ -120,7 +124,7 @@ void FastLED_loop(){
       fill_solid(leds2,NUM_LEDS2,CRGB::Black);
       FastLED.show();
     }
-    IS_ON = ServerCmdChange;
+    //IS_ON = ServerCmdChange;
     }
 }
 
