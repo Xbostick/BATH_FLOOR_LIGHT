@@ -35,6 +35,11 @@ const char* password = "23111970";
 ESP8266WebServer HttpServer(SERVERPORT);
 ESP8266HTTPUpdateServer httpUpdater;
 
+void handle_index(){
+// /╲/\[☉﹏☉]/\╱\ <-- Паук! Ааа! 🕷️  
+  HttpServer.send(200, "text/html", index_page);
+}
+
 void handle_switcher(){
 
     if (ServerCmdChange){
@@ -44,14 +49,9 @@ void handle_switcher(){
     ServerCmdChange=1;
     Serial.println("off new LED");
     }
-    HttpServer.send(200, "text/html", temp);
+    handle_index();
+    HttpServer.send(200, "text/html", index1_page);
 }
-
-void handle_index(){
-// /╲/\[☉﹏☉]/\╱\ <-- Паук! Ааа! 🕷️  
-  HttpServer.send(200, "text/html", temp);
-}
-
 
 void setup_server(const char* ssid, const char* password){
     Serial.print("Connecting to the Network");
