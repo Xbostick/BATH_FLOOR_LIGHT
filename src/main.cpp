@@ -9,6 +9,7 @@
 #include <ArduinoJson.h>
 
 FASTLED_USING_NAMESPACE
+#define DEBUG 0
 #define NUM_LEDS1 130
 #define NUM_LEDS2 200
 #define NOISE_PIN A0
@@ -56,18 +57,22 @@ uint32_t str_to_uint32_t(const char* str){
 
 void handle_index(){
 // /╲/\[☉﹏☉]/\╱\ <-- Паук! Ааа! 🕷️  
-  Serial.print("comming\n");
+
+  if (HttpServer.hasArg("change")){
+      Serial.print("power changed");
+      IS_ON = !IS_ON;
+      NEED_REFRESH = true;
+    } 
+
   if (HttpServer.hasArg("plain") and RDY2USE){
     NEED_REFRESH = 1;
     StaticJsonDocument<200> doc;
     deserializeJson(doc, HttpServer.arg("plain"));
     JsonObject object = doc.as<JsonObject>();
- 
+
     if (object.containsKey("power_change")){
       Serial.print("power changed");
       IS_ON = !IS_ON;
-      Serial.print(ServerLedState);
-      Serial.print(IS_ON);
       NEED_REFRESH = true;
     } 
     if (object.containsKey("color")){
@@ -76,12 +81,8 @@ void handle_index(){
       Serial.println(color);
       main_color = str_to_uint32_t(color);
     } 
-    
-    
-    // get the JsonObject in the JsonDocument
-    
-    Serial.print(doc.as<String>());
   }
+
   HttpServer.send(200, "text/html", index_page);
   
 }
@@ -147,7 +148,8 @@ void DisableSafeMode(){
 
 void setup(){ 
   EEPROM.begin(8);
-  Serial.begin(115200);
+  if (DEBUG)
+    Serial.begin(115200);
 
   pinMode(LED,OUTPUT);
 
