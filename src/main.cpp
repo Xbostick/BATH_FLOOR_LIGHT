@@ -19,6 +19,7 @@ bool ServerCmdChange = 0;
 bool IS_ON = 1;
 bool RDY2USE = 1;
 bool SAFEMODE = 1;
+bool NEED_REFRESH = 0;
 uint8_t count = 0;
 uint32_t main_color = 0x00;
 
@@ -57,6 +58,7 @@ void handle_index(){
 // /╲/\[☉﹏☉]/\╱\ <-- Паук! Ааа! 🕷️  
   Serial.print("comming\n");
   if (HttpServer.hasArg("plain")){
+    NEED_REFRESH = 1;
     StaticJsonDocument<200> doc;
     deserializeJson(doc, HttpServer.arg("plain"));
     const char* color = doc["color"].as<const char*>();
@@ -113,7 +115,7 @@ void server_loop(){
 }
 
 void FastLED_loop(){
-  if  (ServerCmdChange != IS_ON)  {
+  if  ((ServerCmdChange != IS_ON) or NEED_REFRESH) {
     if (IS_ON){
       fill_solid(leds1,NUM_LEDS1,CRGB(main_color));
       fill_solid(leds2,NUM_LEDS2,CRGB(main_color));
@@ -124,7 +126,8 @@ void FastLED_loop(){
       fill_solid(leds2,NUM_LEDS2,CRGB::Black);
       FastLED.show();
     }
-    //IS_ON = ServerCmdChange;
+    IS_ON = ServerCmdChange;
+    NEED_REFRESH = 0;
     }
 }
 

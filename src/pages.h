@@ -91,7 +91,7 @@ char* index_page = "<html lang=\"en\">\n\
         <h1 align=\"center\">мур мур мур</h1>\n\
     </div>\n\
     <div id=\"menu-top\">\n\
-        <a href=\"/LED=ON\"><button class=\"round-button\" onclick=\"toggleButton(this)\">Ванна</button></a>\n\
+        <a href=\"/LED=SWITCH\"><button class=\"round-button\" onclick=\"toggleButton(this)\">Ванна</button></a>\n\
         <a href=\"/LED=ON\"><button class=\"round-button\" onclick=\"toggleButton(this)\">Кухня</button></a>\n\
         <a href=\"/LED=ON\"><button class=\"round-button\" onclick=\"toggleButton(this)\">Спальня</button></a>\n\
     </div>\n\
