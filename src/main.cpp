@@ -6,6 +6,7 @@
 #include "string.h"
 #include "pages.h"
 #include <EEPROM.h>
+#include <ArduinoJson.h>
 
 FASTLED_USING_NAMESPACE
 #define NUM_LEDS1 130
@@ -38,7 +39,33 @@ ESP8266HTTPUpdateServer httpUpdater;
 
 void handle_index(){
 // /╲/\[☉﹏☉]/\╱\ <-- Паук! Ааа! 🕷️  
+  Serial.print("comming\n");
+  String message;
+  for (int i = 0; i < HttpServer.args(); i++) {
+
+        message += "Arg nº" + (String)i + " –> ";
+        message += HttpServer.argName(i) + ": ";
+        message += HttpServer.arg(i) + "\n";
+        DynamicJsonDocument doc(2048);
+        deserializeJson(doc, HttpServer.arg(i));
+        Serial.println(doc.as<String>());
+
+        } 
+
+  Serial.print(message);
+
+  DynamicJsonDocument doc(2048);
+  deserializeJson(doc, HttpServer.arg('color'));
+  Serial.println(doc["color"].as<String>());
+  
   HttpServer.send(200, "text/html", index_page);
+}
+
+void handle_json(){
+  DynamicJsonDocument doc(2048);
+  deserializeJson(doc, HttpServer.arg('color'));
+  Serial.println(doc["color"].as<String>());
+
 }
 
 void handle_switcher(){
@@ -51,7 +78,7 @@ void handle_switcher(){
     Serial.println("off new LED");
     }
     handle_index();
-    HttpServer.send(200, "text/html", index1_page);
+    HttpServer.send(200, "text/html", index_page);
 }
 
 void setup_server(const char* ssid, const char* password){
@@ -76,7 +103,7 @@ void setup_server(const char* ssid, const char* password){
     HttpServer.on("/", handle_index);
     if (RDY2USE){
       HttpServer.on("/LED=SWITCH", handle_switcher);
-      }
+      HttpServer.on("/", HTTP_POST, handle_json);}
 
     HttpServer.begin();
 }
