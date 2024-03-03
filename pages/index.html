@@ -30,6 +30,7 @@
             cursor: pointer;
             font-family: 'Optima', sans-serif;
         }
+        
 
         .round-button {
             border-radius: 0;
@@ -90,14 +91,14 @@
     </div>
     <div id="menu-top">
         <button class="round-button" onclick=powerChange()>Ванна</button></a>
-        <button class="round-button" onclick=powerChange()>Кухня</button></a>
-        <a href="/LED=ON"><button class="round-button" onclick=powerChange()>Спальня</button></a>
+        <!-- <button class="round-button" onclick=powerChange()>Кухня</button></a>
+        <a href="/LED=ON"><button class="round-button" onclick=powerChange()>Спальня</button></a> -->
     </div>
 
     <div id="colorPickerContainer">
         <input type="color" id="colorPicker" onchange="updateColor(this.value)">
         <div id="colorValue"></div>
-        <button onclick="sendColor()">Ок</button>
+        <button class="round-button" onclick="sendColor()">Ок</button>
     </div>
 
     <script>

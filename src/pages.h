@@ -92,8 +92,8 @@ char* index_page = "<html lang=\"en\">\n\
     </div>\n\
     <div id=\"menu-top\">\n\
         <button class=\"round-button\" onclick=powerChange()>Ванна</button></a>\n\
-        <button class=\"round-button\" onclick=powerChange()>Кухня</button></a>\n\
-        <a href=\"/LED=ON\"><button class=\"round-button\" onclick=powerChange()>Спальня</button></a>\n\
+        <!-- <button class=\"round-button\" onclick=powerChange()>Кухня</button></a>\n\
+        <a href=\"/LED=ON\"><button class=\"round-button\" onclick=powerChange()>Спальня</button></a> -->\n\
     </div>\n\
 \n\
     <div id=\"colorPickerContainer\">\n\
