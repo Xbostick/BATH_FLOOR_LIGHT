@@ -42,21 +42,17 @@ void handle_index(){
   Serial.print("comming\n");
   String message;
   for (int i = 0; i < HttpServer.args(); i++) {
-
         message += "Arg nº" + (String)i + " –> ";
         message += HttpServer.argName(i) + ": ";
         message += HttpServer.arg(i) + "\n";
-        DynamicJsonDocument doc(2048);
-        deserializeJson(doc, HttpServer.arg(i));
-        Serial.println(doc.as<String>());
-
         } 
-
-  Serial.print(message);
+ 
+  Serial.println(HttpServer.arg("plain"));
 
   DynamicJsonDocument doc(2048);
-  deserializeJson(doc, HttpServer.arg('color'));
+  deserializeJson(doc, HttpServer.arg("plain"));
   Serial.println(doc["color"].as<String>());
+  Serial.println(doc.as<String>());
   
   HttpServer.send(200, "text/html", index_page);
 }
