@@ -91,9 +91,9 @@ char* index_page = "<html lang=\"en\">\n\
         <h1 align=\"center\">мур мур мур</h1>\n\
     </div>\n\
     <div id=\"menu-top\">\n\
-        <a href=\"/LED=SWITCH\"><button class=\"round-button\" onclick=\"toggleButton(this)\">Ванна</button></a>\n\
-        <a href=\"/LED=ON\"><button class=\"round-button\" onclick=\"toggleButton(this)\">Кухня</button></a>\n\
-        <a href=\"/LED=ON\"><button class=\"round-button\" onclick=\"toggleButton(this)\">Спальня</button></a>\n\
+        <button class=\"round-button\" onclick=powerChange()>Ванна</button></a>\n\
+        <button class=\"round-button\" onclick=powerChange()>Кухня</button></a>\n\
+        <a href=\"/LED=ON\"><button class=\"round-button\" onclick=powerChange()>Спальня</button></a>\n\
     </div>\n\
 \n\
     <div id=\"colorPickerContainer\">\n\
@@ -106,6 +106,17 @@ char* index_page = "<html lang=\"en\">\n\
         function toggleButton(button) {\n\
             button.classList.toggle('clicked');\n\
         }\n\
+        function powerChange(){\n\
+            let response = fetch('/', {\n\
+                                        method: 'POST',\n\
+                                        headers: {\n\
+                                        'Content-Type': 'application/json;charset=utf-8'\n\
+                                        },\n\
+                                            body: JSON.stringify({\n\
+                                            power_change: \"1\"\n\
+                                                                })\n\
+                                        });\n\
+        };\n\
 \n\
         function updateColor(color) {\n\
             var colorValueElement = document.getElementById('colorValue');\n\
@@ -121,7 +132,9 @@ char* index_page = "<html lang=\"en\">\n\
             colorValueElement.style.width = rect.width + 'px';\n\
             colorValueElement.style.textAlign = 'center';\n\
 \n\
-            colorValueElement.textContent = 'Выбранный цвет: ' + color;\n\
+            //colorValueElement.textContent = 'Выбранный цвет: ' + color;\n\
+\n\
+            \n\
         }\n\
 \n\
         function sendColor() {\n\

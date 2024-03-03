@@ -15,8 +15,8 @@ FASTLED_USING_NAMESPACE
 #define LED_PIN1 D2
 #define LED_PIN2 D3
 
-bool ServerCmdChange = 0;
-bool IS_ON = 1;
+bool ServerLedState = 0;
+bool IS_ON = 0;
 bool RDY2USE = 1;
 bool SAFEMODE = 1;
 bool NEED_REFRESH = 0;
@@ -30,7 +30,7 @@ CRGB leds2[NUM_LEDS2];
 int LED = 16; // led connected to D0
 #define OTAUSER         "admin"    // Логин для входа в OTA
 #define OTAPASSWORD     "231170"    // Пароль для входа в ОТА
-#define OTAPATH         "/UPDATE"// Путь, который будем дописывать после ip адреса в браузере.
+#define OTAPATH         "/UPD"// Путь, который будем дописывать после ip адреса в браузере.
 #define SERVERPORT      80         // Порт для входа, он стандартный 80 это порт http 
 
 const char* ssid = "196_kit";
@@ -57,30 +57,33 @@ uint32_t str_to_uint32_t(const char* str){
 void handle_index(){
 // /╲/\[☉﹏☉]/\╱\ <-- Паук! Ааа! 🕷️  
   Serial.print("comming\n");
-  if (HttpServer.hasArg("plain")){
+  if (HttpServer.hasArg("plain") and RDY2USE){
     NEED_REFRESH = 1;
     StaticJsonDocument<200> doc;
     deserializeJson(doc, HttpServer.arg("plain"));
-    const char* color = doc["color"].as<const char*>();
+    JsonObject object = doc.as<JsonObject>();
+ 
+    if (object.containsKey("power_change")){
+      Serial.print("power changed");
+      IS_ON = !IS_ON;
+      Serial.print(ServerLedState);
+      Serial.print(IS_ON);
+      NEED_REFRESH = true;
+    } 
+    if (object.containsKey("color")){
+      const char* color = object["color"];
+      Serial.print("color change to ");
+      Serial.println(color);
+      main_color = str_to_uint32_t(color);
+    } 
+    
+    
     // get the JsonObject in the JsonDocument
-    main_color = str_to_uint32_t(color);
-    Serial.print(main_color);
+    
+    Serial.print(doc.as<String>());
   }
   HttpServer.send(200, "text/html", index_page);
   
-}
-
-void handle_switcher(){
-
-    if (ServerCmdChange){
-    ServerCmdChange=0;
-    Serial.println("on new LED");}
-    else{
-    ServerCmdChange=1;
-    Serial.println("off new LED");
-    }
-    handle_index();
-    HttpServer.send(200, "text/html", index_page);
 }
 
 void setup_server(const char* ssid, const char* password){
@@ -103,10 +106,6 @@ void setup_server(const char* ssid, const char* password){
 
     httpUpdater.setup(&HttpServer, OTAPATH, OTAUSER, OTAPASSWORD);
     HttpServer.on("/", handle_index);
-    if (RDY2USE){
-      HttpServer.on("/LED=SWITCH", handle_switcher);
-    }
-
     HttpServer.begin();
 }
 
@@ -115,7 +114,7 @@ void server_loop(){
 }
 
 void FastLED_loop(){
-  if  ((ServerCmdChange != IS_ON) or NEED_REFRESH) {
+  if  (NEED_REFRESH){
     if (IS_ON){
       fill_solid(leds1,NUM_LEDS1,CRGB(main_color));
       fill_solid(leds2,NUM_LEDS2,CRGB(main_color));
@@ -126,7 +125,6 @@ void FastLED_loop(){
       fill_solid(leds2,NUM_LEDS2,CRGB::Black);
       FastLED.show();
     }
-    IS_ON = ServerCmdChange;
     NEED_REFRESH = 0;
     }
 }

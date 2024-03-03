@@ -89,9 +89,9 @@
         <h1 align="center">мур мур мур</h1>
     </div>
     <div id="menu-top">
-        <a href="/LED=SWITCH"><button class="round-button" onclick="toggleButton(this)">Ванна</button></a>
-        <a href="/LED=ON"><button class="round-button" onclick="toggleButton(this)">Кухня</button></a>
-        <a href="/LED=ON"><button class="round-button" onclick="toggleButton(this)">Спальня</button></a>
+        <button class="round-button" onclick=powerChange()>Ванна</button></a>
+        <button class="round-button" onclick=powerChange()>Кухня</button></a>
+        <a href="/LED=ON"><button class="round-button" onclick=powerChange()>Спальня</button></a>
     </div>
 
     <div id="colorPickerContainer">
@@ -104,6 +104,17 @@
         function toggleButton(button) {
             button.classList.toggle('clicked');
         }
+        function powerChange(){
+            let response = fetch('/', {
+                                        method: 'POST',
+                                        headers: {
+                                        'Content-Type': 'application/json;charset=utf-8'
+                                        },
+                                            body: JSON.stringify({
+                                            power_change: "1"
+                                                                })
+                                        });
+        };
 
         function updateColor(color) {
             var colorValueElement = document.getElementById('colorValue');
@@ -119,7 +130,9 @@
             colorValueElement.style.width = rect.width + 'px';
             colorValueElement.style.textAlign = 'center';
 
-            colorValueElement.textContent = 'Выбранный цвет: ' + color;
+            //colorValueElement.textContent = 'Выбранный цвет: ' + color;
+
+            
         }
 
         function sendColor() {
