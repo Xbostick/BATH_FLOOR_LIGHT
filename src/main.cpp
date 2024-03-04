@@ -8,6 +8,8 @@
 #include <EEPROM.h>
 #include <ArduinoJson.h>
 
+#include "secure_data.h"
+
 FASTLED_USING_NAMESPACE
 #define DEBUG 0
 #define NUM_LEDS1 130
@@ -29,13 +31,7 @@ CRGB leds2[NUM_LEDS2];
 
 
 int LED = 16; // led connected to D0
-#define OTAUSER         "admin"    // Логин для входа в OTA
-#define OTAPASSWORD     "231170"    // Пароль для входа в ОТА
-#define OTAPATH         "/UPD"// Путь, который будем дописывать после ip адреса в браузере.
-#define SERVERPORT      80         // Порт для входа, он стандартный 80 это порт http 
 
-const char* ssid = "196_kit";
-const char* password = "23111970";
 
 ESP8266WebServer HttpServer(SERVERPORT);
 ESP8266HTTPUpdateServer httpUpdater;
