@@ -11,7 +11,7 @@
 #include "secure_data.h"
 
 FASTLED_USING_NAMESPACE
-#define DEBUG 0
+#define DEBUG 1
 #define NUM_LEDS1 130
 #define NUM_LEDS2 200
 #define NOISE_PIN A0

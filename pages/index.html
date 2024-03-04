@@ -1,14 +1,24 @@
 <html lang="en">
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
     <style>
         body {
             background-color: #f2eddf;
-            font-family: "Lucida Console", monospace;
+            font-family: "Lobster", sans-serif;
+            font-weight: 200;
+            font-style: normal;
+            font-size: 30px;
+            /* font-family: "Lucida Console", monospace; */
             margin: 0; /* Убираем внешние отступы для body */
         }
 
         h1, p, #basic, #head-site, #menu-top {
-            font-family: "Lucida Console", monospace;
+            font-family: "Lobster", sans-serif;
+            font-weight: 200;
+            font-style: normal;
+            /* font-family: "Lucida Console", monospace; */
         }
 
         #head-site {
@@ -28,14 +38,14 @@
             border-radius: 15px;
             padding: 8px 15px;
             cursor: pointer;
-            font-family: 'Optima', sans-serif;
+            font-family: 'Lobster', sans-serif;
         }
 
         .round-button {
             border-radius: 0;
             padding: 15px 30px;
             cursor: pointer;
-            font-family: "Lucida Console", monospace;
+            font-family: "Lobster", monospace;
             background-color: transparent;
             border: 2px solid #000;
             color: #000;
@@ -43,6 +53,8 @@
             margin: 0 5%; /* Используем проценты для отступов */
             transition: background-color 0.3s, color 0.3s;
             margin-bottom: 10px; /* Добавляем отступ снизу между кнопками */
+            border: 2px solid #1c6a83;
+            border-radius: 49px;
         }
 
 
@@ -95,7 +107,7 @@
     </div>
 
     <div id="colorPickerContainer">
-        <input type="color" id="colorPicker" onchange="updateColor(this.value)">
+        <input type="color" id="colorPicker" onchange="updateColor(this.value)" value="#d23252">
         <div id="colorValue"></div>
         <button onclick="sendColor()">Ок</button>
     </div>

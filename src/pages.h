@@ -2,15 +2,25 @@
 
 char* index_page = "<html lang=\"en\">\n\
 <head>\n\
+    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n\
+    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n\
+    <link href=\"https://fonts.googleapis.com/css2?family=Lobster&display=swap\" rel=\"stylesheet\">\n\
     <style>\n\
         body {\n\
             background-color: #f2eddf;\n\
-            font-family: \"Lucida Console\", monospace;\n\
+            font-family: \"Lobster\", sans-serif;\n\
+            font-weight: 200;\n\
+            font-style: normal;\n\
+            font-size: 30px;\n\
+            /* font-family: \"Lucida Console\", monospace; */\n\
             margin: 0; /* Убираем внешние отступы для body */\n\
         }\n\
 \n\
         h1, p, #basic, #head-site, #menu-top {\n\
-            font-family: \"Lucida Console\", monospace;\n\
+            font-family: \"Lobster\", sans-serif;\n\
+            font-weight: 200;\n\
+            font-style: normal;\n\
+            /* font-family: \"Lucida Console\", monospace; */\n\
         }\n\
 \n\
         #head-site {\n\
@@ -30,14 +40,14 @@ char* index_page = "<html lang=\"en\">\n\
             border-radius: 15px;\n\
             padding: 8px 15px;\n\
             cursor: pointer;\n\
-            font-family: 'Optima', sans-serif;\n\
+            font-family: 'Lobster', sans-serif;\n\
         }\n\
 \n\
         .round-button {\n\
             border-radius: 0;\n\
             padding: 15px 30px;\n\
             cursor: pointer;\n\
-            font-family: \"Lucida Console\", monospace;\n\
+            font-family: \"Lobster\", monospace;\n\
             background-color: transparent;\n\
             border: 2px solid #000;\n\
             color: #000;\n\
@@ -45,6 +55,8 @@ char* index_page = "<html lang=\"en\">\n\
             margin: 0 5%; /* Используем проценты для отступов */\n\
             transition: background-color 0.3s, color 0.3s;\n\
             margin-bottom: 10px; /* Добавляем отступ снизу между кнопками */\n\
+            border: 2px solid #1c6a83;\n\
+            border-radius: 49px;\n\
         }\n\
 \n\
 \n\
@@ -97,7 +109,7 @@ char* index_page = "<html lang=\"en\">\n\
     </div>\n\
 \n\
     <div id=\"colorPickerContainer\">\n\
-        <input type=\"color\" id=\"colorPicker\" onchange=\"updateColor(this.value)\">\n\
+        <input type=\"color\" id=\"colorPicker\" onchange=\"updateColor(this.value)\" value=\"#d23252\">\n\
         <div id=\"colorValue\"></div>\n\
         <button onclick=\"sendColor()\">Ок</button>\n\
     </div>\n\
