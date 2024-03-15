@@ -108,7 +108,50 @@ char* index_page = "<html lang=\"en\">\n\
         <button onclick=\"sendColor()\">Ок</button>\n\
     </div>\n\
 \n\
+    <p id=\"status\">Connecting...</p>\n\
+\n\
+\n\
     <script>\n\
+       \n\
+        window.addEventListener('load', onload);\n\
+        var socket;\n\
+\n\
+        function onload(event) {\n\
+            initWebSocket();\n\
+            }\n\
+\n\
+        function initWebSocket() {\n\
+            console.log('Trying to open a WebSocket connection…');\n\
+            socket = new WebSocket(`ws://${window.location.hostname}:81`);\n\
+            socket.onopen    = onOpen;\n\
+            socket.onclose   = onClose;\n\
+            socket.onmessage = onMessage;\n\
+            }\n\
+\n\
+        function onOpen(event) {\n\
+            console.log('Connection opened');\n\
+            }\n\
+\n\
+        function onClose(event) {\n\
+            console.log('Connection closed');\n\
+            setTimeout(initWebSocket, 2000);\n\
+            } \n\
+        function onMessage(event) {\n\
+            var server_message = event.data;\n\
+            const obj = JSON.parse(server_message);\n\
+            document.getElementById(\"status\").textContent=obj.status            \n\
+            } \n\
+\n\
+        function test(event){\n\
+            if(socket && socket.readyState == 1)\n\
+            {\n\
+                console.log(event);\n\
+                message =event.data;\n\
+                console.log(event.data);\n\
+                let chkbx = document.getElementById(\"output_txt\");\n\
+                chkbx.value = message;\n\
+            }\n\
+        } \n\
         function toggleButton(button) {\n\
             button.classList.toggle('clicked');\n\
         }\n\

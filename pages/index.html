@@ -106,7 +106,50 @@
         <button onclick="sendColor()">Ок</button>
     </div>
 
+    <p id="status">Connecting...</p>
+
+
     <script>
+       
+        window.addEventListener('load', onload);
+        var socket;
+
+        function onload(event) {
+            initWebSocket();
+            }
+
+        function initWebSocket() {
+            console.log('Trying to open a WebSocket connection…');
+            socket = new WebSocket(`ws://${window.location.hostname}:81`);
+            socket.onopen    = onOpen;
+            socket.onclose   = onClose;
+            socket.onmessage = onMessage;
+            }
+
+        function onOpen(event) {
+            console.log('Connection opened');
+            }
+
+        function onClose(event) {
+            console.log('Connection closed');
+            setTimeout(initWebSocket, 2000);
+            } 
+        function onMessage(event) {
+            var server_message = event.data;
+            const obj = JSON.parse(server_message);
+            document.getElementById("status").textContent=obj.status            
+            } 
+
+        function test(event){
+            if(socket && socket.readyState == 1)
+            {
+                console.log(event);
+                message =event.data;
+                console.log(event.data);
+                let chkbx = document.getElementById("output_txt");
+                chkbx.value = message;
+            }
+        } 
         function toggleButton(button) {
             button.classList.toggle('clicked');
         }

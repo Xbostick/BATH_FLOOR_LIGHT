@@ -2,15 +2,13 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
-#include <WebSocketsServer.h>
 #include <FastLED.h>
 #include "string.h"
 #include "pages.h"
-#include <EEPROM.h>
 #include <ArduinoJson.h>
-
+#include "primary_functions.h"
 #include "secure_data.h"
-
+#include "websocket.h"
 FASTLED_USING_NAMESPACE
 
 #define NUM_LEDS1 130
@@ -40,7 +38,7 @@ unsigned long ActualCycleTime;
 CRGB leds1[NUM_LEDS1];
 CRGB leds2[NUM_LEDS2];
 
-#define DEBUG 0
+#define DEBUG 1
 /* All debug defines here*/
 
 void debug_setup(){
@@ -57,20 +55,7 @@ void debug_loop(){
 ESP8266WebServer HttpServer(SERVERPORT);
 ESP8266HTTPUpdateServer httpUpdater;
 
-uint32_t str_to_uint32_t(const char* str){
-  uint32_t new_uint = 0;
-  int ch_2_int = 0;
-  for(int i = 1; i < strlen(str); i++){
-    // new_uint += int(str[i]);
-    ch_2_int = int(str[i]);
-    if (ch_2_int < 70) 
-      new_uint += (ch_2_int - 48) * pow(16,strlen(str) - i - 1);
-    else
-      new_uint += (ch_2_int - 87) * pow(16,strlen(str) - i - 1);
-  }
-
-  return new_uint;
-}
+WebSocketsServer webSocket = WebSocketsServer(81);
 
 void handle_index(){
 // /╲/\[☉﹏☉]/\╱\ <-- Паук! Ааа! 🕷️  
@@ -127,7 +112,6 @@ void setup_server(const char* ssid, const char* password){
     HttpServer.begin();
 }
 
-
 void server_loop(){
     HttpServer.handleClient();
 }
@@ -144,6 +128,7 @@ void FastLED_loop(){
       fill_solid(leds2,NUM_LEDS2,CRGB::Black);
       FastLED.show();
     }
+    webSocketBroadcastStatus();
     NEED_REFRESH = 0;
     }
 }
@@ -162,8 +147,8 @@ void DistanceSensor_loop(){
     digitalWrite(DistanceSensorTrigPin, LOW);
 
     float distance = ( pulseIn(DistanceSensorEchoPin, HIGH)*.0343)/2;
-    Serial.print("Distance: ");
-    Serial.println(distance);
+    // Serial.print("Distance: ");
+    // Serial.println(distance);
 
     if (distance < DistanceSensorDistance_sm){
        IS_ON = !IS_ON;
@@ -175,26 +160,9 @@ void DistanceSensor_loop(){
     
 }
 
-
-bool IsReadyToUse_check_by_EEPROM(){
-  EEPROM.begin(8);
-  uint8_t restart_num = EEPROM.read(0);
-  Serial.print("/nSafemode? Already restarted = ");
-  Serial.println(restart_num);
-  EEPROM.write(0,restart_num+1);
-  EEPROM.commit();
-  return ((restart_num < 3) or DEBUG);
-}
-
 void refresh_timers(){
   DistanceSensorTimeTicker = 0;
   DistanceSensorTimeDelay = 0;
-}
-
-void DisableSafeMode(){
-  EEPROM.write(0,0);
-  Serial.println("\nNo safemode now");
-  EEPROM.commit();
 }
 
 void setup(){ 
@@ -221,7 +189,11 @@ void setup(){
     pinMode(LED_PIN2,OUTPUT);
   };
 
-  if (RDY2USE) DistanseSensor_setup();
+  if (RDY2USE) {
+    DistanseSensor_setup();
+    webSocket_setup();
+  }
+
   if (DEBUG) debug_setup();
 
   digitalWrite(LED,0);
@@ -234,6 +206,7 @@ void loop(){
   if (RDY2USE){
     FastLED_loop();
     DistanceSensor_loop();
+    webSocket_loop();
   }
 
   if ((ActualCycleTime > 30000) and SAFEMODE) {
