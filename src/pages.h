@@ -29,9 +29,14 @@ char* index_page = "<html lang=\"en\">\n\
         button {\n\
             border-radius: 15px;\n\
             padding: 8px 15px;\n\
+            background-color: #f2eddf;\n\
             cursor: pointer;\n\
             font-family: 'Optima', sans-serif;\n\
+            margin: 0 auto; /* Используйте auto для центрирования по горизонтали */\n\
+            display: block; /* Добавьте display: block, чтобы убедиться, что margin: auto работает */\n\
+            text-align: center;\n\
         }\n\
+\n\
 \n\
         .round-button {\n\
             border-radius: 0;\n\
@@ -42,9 +47,8 @@ char* index_page = "<html lang=\"en\">\n\
             border: 2px solid #000;\n\
             color: #000;\n\
             font-size: 18px;\n\
-            margin: 0 5%; /* Используем проценты для отступов */\n\
+            margin: 0 auto; /* Центрируем по горизонтали */\n\
             transition: background-color 0.3s, color 0.3s;\n\
-            margin-bottom: 10px; /* Добавляем отступ снизу между кнопками */\n\
         }\n\
 \n\
 \n\
@@ -63,9 +67,11 @@ char* index_page = "<html lang=\"en\">\n\
             width: 100px;\n\
             height: 100px;\n\
             border: none;\n\
-            background: none;\n\
+            background-color: #f2eddf;\n\
             padding: 0;\n\
             cursor: pointer;\n\
+            margin:  auto; \n\
+            display: block; \n\
         }\n\
 \n\
         #colorPickerContainer {\n\

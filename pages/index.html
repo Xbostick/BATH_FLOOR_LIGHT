@@ -27,9 +27,14 @@
         button {
             border-radius: 15px;
             padding: 8px 15px;
+            background-color: #f2eddf;
             cursor: pointer;
             font-family: 'Optima', sans-serif;
+            margin: 0 auto; /* Используйте auto для центрирования по горизонтали */
+            display: block; /* Добавьте display: block, чтобы убедиться, что margin: auto работает */
+            text-align: center;
         }
+
 
         .round-button {
             border-radius: 0;
@@ -40,9 +45,8 @@
             border: 2px solid #000;
             color: #000;
             font-size: 18px;
-            margin: 0 5%; /* Используем проценты для отступов */
+            margin: 0 auto; /* Центрируем по горизонтали */
             transition: background-color 0.3s, color 0.3s;
-            margin-bottom: 10px; /* Добавляем отступ снизу между кнопками */
         }
 
 
@@ -61,9 +65,11 @@
             width: 100px;
             height: 100px;
             border: none;
-            background: none;
+            background-color: #f2eddf;
             padding: 0;
             cursor: pointer;
+            margin:  auto; 
+            display: block; 
         }
 
         #colorPickerContainer {
