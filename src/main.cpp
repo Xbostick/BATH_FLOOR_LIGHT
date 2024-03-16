@@ -33,22 +33,29 @@ bool NEED_REFRESH = 0;
 
 uint8_t count = 0;
 uint32_t main_color = 0xFF;
+char* main_color_str = "#0000ff";
+
+StaticJsonDocument<100> status_json;
+const char* status_json_init_string = "{\"power\":\"0\",\"color\":\"#ff0000\"}";
+
 unsigned long ActualCycleTime;
 
 CRGB leds1[NUM_LEDS1];
 CRGB leds2[NUM_LEDS2];
 
-#define DEBUG 1
+#define DEBUG 0
 /* All debug defines here*/
+void DistanceSensor_setup();
+void DistanceSensor_loop();
 
 void debug_setup(){
-  ;
+  DistanceSensor_setup();
 } 
 
 void debug_loop(){
- ;
+  DistanceSensor_loop();
 }
-
+//Тут находится реализация датчика дистанции. Пока что кинут в дебаг, тк на рабочей версии нет датчика)
 /*end*/
 
 
@@ -78,10 +85,11 @@ void handle_index(){
       NEED_REFRESH = true;
     } 
     if (object.containsKey("color")){
-      const char* color = object["color"];
+      const char* color_str = object["color"];
+      strcpy(main_color_str,color_str);
       Serial.print("color change to ");
-      Serial.println(color);
-      main_color = str_to_uint32_t(color);
+      Serial.println(main_color_str);
+      main_color = str_to_uint32_t(main_color_str);
     } 
   }
 
@@ -133,7 +141,7 @@ void FastLED_loop(){
     }
 }
 
-void DistanseSensor_setup(){
+void DistanceSensor_setup(){
   pinMode(DistanceSensorTrigPin, OUTPUT);
   pinMode(DistanceSensorEchoPin, INPUT); 
 }
@@ -190,7 +198,6 @@ void setup(){
   };
 
   if (RDY2USE) {
-    DistanseSensor_setup();
     webSocket_setup();
   }
 
@@ -201,12 +208,17 @@ void setup(){
 
 void loop(){
 
-  server_loop();
+   if ((count+1) % 2 == 0){
+      server_loop();
+    }
 
   if (RDY2USE){
-    FastLED_loop();
-    DistanceSensor_loop();
-    webSocket_loop();
+    if (count % 50000 == 0){ // для функций, который не должны крутиться постоянно
+      FastLED_loop();
+    }
+    if (count % 2 == 0){
+      webSocket_loop();
+    }
   }
 
   if ((ActualCycleTime > 30000) and SAFEMODE) {
@@ -224,5 +236,6 @@ void loop(){
     refresh_timers();
   }
 
+  count++;
   ActualCycleTime = millis();
 }

@@ -12,18 +12,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       {
         IPAddress ip = webSocket.remoteIP(num);
         Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-        const uint8_t size = JSON_OBJECT_SIZE(1);
-        StaticJsonDocument<size> json;
-        // Send the current LED status
-        if (IS_ON) {
-          json["status"] = "+";
-        }
-        else {
-          json["status"] = "-";
-        }
-        String data;
-        serializeJson(json, data);
-        webSocket.sendTXT(num,data);
+        webSocketBroadcastStatus();
       }        
       break;
     case WStype_BIN:
@@ -40,6 +29,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 }
 
 void webSocket_setup(){
+    deserializeJson(status_json, status_json_init_string);
     webSocket.begin();
     webSocket.onEvent(webSocketEvent);
 }
@@ -49,17 +39,18 @@ void webSocket_loop(){
 }
 
 void webSocketBroadcastStatus(){
-        const uint8_t size = JSON_OBJECT_SIZE(1);
-        StaticJsonDocument<size> json;
         // Send the current LED status
         if (IS_ON) {
-          json["status"] = "+";
+          status_json["power"] = "1";
         }
         else {
-          json["status"] = "-";
+          status_json["power"] = "0";
         }
+        Serial.println(main_color_str);
+        status_json["color"] = main_color_str;
         String data;
-        serializeJson(json, data);
+        serializeJson(status_json, data);
+        Serial.println(data);
         webSocket.broadcastTXT(data);
     
 }

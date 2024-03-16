@@ -97,7 +97,7 @@ char* index_page = "<html lang=\"en\">\n\
         <h1 align=\"center\">мур мур мур</h1>\n\
     </div>\n\
     <div id=\"menu-top\">\n\
-        <button class=\"round-button\" onclick=powerChange()>Ванна</button></a>\n\
+        <button id=\"bathroom_button\" class=\"round-button\" onclick=powerChange()>Ванна</button></a>\n\
         <!-- <button class=\"round-button\" onclick=powerChange()>Кухня</button></a>\n\
         <a href=\"/LED=ON\"><button class=\"round-button\" onclick=powerChange()>Спальня</button></a> -->\n\
     </div>\n\
@@ -107,8 +107,6 @@ char* index_page = "<html lang=\"en\">\n\
         <div id=\"colorValue\"></div>\n\
         <button onclick=\"sendColor()\">Ок</button>\n\
     </div>\n\
-\n\
-    <p id=\"status\">Connecting...</p>\n\
 \n\
 \n\
     <script>\n\
@@ -139,7 +137,12 @@ char* index_page = "<html lang=\"en\">\n\
         function onMessage(event) {\n\
             var server_message = event.data;\n\
             const obj = JSON.parse(server_message);\n\
-            document.getElementById(\"status\").textContent=obj.status            \n\
+            if (obj.power == 1){\n\
+                document.getElementById(\"bathroom_button\").style.background= \"#ffeb3b\";\n\
+            }\n\
+            else  document.getElementById(\"bathroom_button\").style.background= \"transparent\";\n\
+\n\
+            document.getElementById('colorPicker').value = obj.color;           \n\
             } \n\
 \n\
         function test(event){\n\

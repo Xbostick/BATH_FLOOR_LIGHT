@@ -95,7 +95,7 @@
         <h1 align="center">мур мур мур</h1>
     </div>
     <div id="menu-top">
-        <button class="round-button" onclick=powerChange()>Ванна</button></a>
+        <button id="bathroom_button" class="round-button" onclick=powerChange()>Ванна</button></a>
         <!-- <button class="round-button" onclick=powerChange()>Кухня</button></a>
         <a href="/LED=ON"><button class="round-button" onclick=powerChange()>Спальня</button></a> -->
     </div>
@@ -105,8 +105,6 @@
         <div id="colorValue"></div>
         <button onclick="sendColor()">Ок</button>
     </div>
-
-    <p id="status">Connecting...</p>
 
 
     <script>
@@ -137,7 +135,12 @@
         function onMessage(event) {
             var server_message = event.data;
             const obj = JSON.parse(server_message);
-            document.getElementById("status").textContent=obj.status            
+            if (obj.power == 1){
+                document.getElementById("bathroom_button").style.background= "#ffeb3b";
+            }
+            else  document.getElementById("bathroom_button").style.background= "transparent";
+
+            document.getElementById('colorPicker').value = obj.color;           
             } 
 
         function test(event){
