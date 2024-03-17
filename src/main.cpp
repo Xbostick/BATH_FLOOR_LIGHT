@@ -43,7 +43,7 @@ unsigned long ActualCycleTime;
 CRGB leds1[NUM_LEDS1];
 CRGB leds2[NUM_LEDS2];
 
-#define DEBUG 0
+#define DEBUG 1
 /* All debug defines here*/
 void DistanceSensor_setup();
 void DistanceSensor_loop();
@@ -155,8 +155,8 @@ void DistanceSensor_loop(){
     digitalWrite(DistanceSensorTrigPin, LOW);
 
     float distance = ( pulseIn(DistanceSensorEchoPin, HIGH)*.0343)/2;
-    // Serial.print("Distance: ");
-    // Serial.println(distance);
+    Serial.print("Distance: ");
+    Serial.println(distance);
 
     if (distance < DistanceSensorDistance_sm){
        IS_ON = !IS_ON;
