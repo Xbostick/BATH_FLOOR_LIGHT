@@ -43,17 +43,24 @@ unsigned long ActualCycleTime;
 CRGB leds1[NUM_LEDS1];
 CRGB leds2[NUM_LEDS2];
 
+long SinceOn = 0;
+
 #define DEBUG 1
 /* All debug defines here*/
+#if DEBUG
+
+#endif
+
 void DistanceSensor_setup();
 void DistanceSensor_loop();
 
 void debug_setup(){
-  DistanceSensor_setup();
+  //DistanceSensor_setup();
 } 
 
 void debug_loop(){
-  DistanceSensor_loop();
+  //DistanceSensor_loop();
+ 
 }
 //Тут находится реализация датчика дистанции. Пока что кинут в дебаг, тк на рабочей версии нет датчика)
 /*end*/
@@ -130,6 +137,7 @@ void FastLED_loop(){
       fill_solid(leds1,NUM_LEDS1,CRGB(main_color));
       fill_solid(leds2,NUM_LEDS2,CRGB(main_color));
       FastLED.show();
+      SinceOn = millis();
      }
     else{
       fill_solid(leds1,NUM_LEDS1,CRGB::Black);
@@ -213,12 +221,13 @@ void loop(){
     }
 
   if (RDY2USE){
-    if (count % 50000 == 0){ // для функций, который не должны крутиться постоянно
+    if (ActualCycleTime % 500 == 0){ // для функций, который не должны крутиться постоянно
       FastLED_loop();
     }
     if (count % 2 == 0){
       webSocket_loop();
     }
+    //if (DEBUG and (count % 20 == 0)) debug_loop();
   }
 
   if ((ActualCycleTime > 30000) and SAFEMODE) {
@@ -229,13 +238,22 @@ void loop(){
     DisableSafeMode();
   };
     
-  if (DEBUG) debug_loop();
+  // if ((DEBUG) and ActualCycleTime > debug_timer1 + 1000*5){
+  //   debug_timer1 = ActualCycleTime;
+  //   debug_loop();
+  // } 
+  
 
   if (ActualCycleTime > millis())
   {
     refresh_timers();
   }
 
+  if ((SinceOn + 120000 < millis()) and IS_ON and !NEED_REFRESH)//120000
+  {
+    IS_ON = 0;
+    NEED_REFRESH = 1;
+  }
   count++;
   ActualCycleTime = millis();
 }
