@@ -43,9 +43,10 @@ unsigned long ActualCycleTime;
 CRGB leds1[NUM_LEDS1];
 CRGB leds2[NUM_LEDS2];
 
-long SinceOn = 0;
+long SinceOn = -1;
+long Delay_to_PowerOff = 3600000;
 
-#define DEBUG 1
+#define DEBUG 0
 /* All debug defines here*/
 #if DEBUG
 
@@ -78,6 +79,14 @@ void handle_index(){
       Serial.print("power changed");
       IS_ON = !IS_ON;
       NEED_REFRESH = true;
+    }
+  if (HttpServer.hasArg("auto_power_on")){
+      Serial.print("power changed via auto_power_on to");
+      IS_ON = 1;
+      NEED_REFRESH = true;
+      SinceOn = millis();
+      Delay_to_PowerOff = HttpServer.arg("auto_power_on").toInt();
+      Serial.println(Delay_to_PowerOff);
     } 
 
   if (HttpServer.hasArg("plain") and RDY2USE){
@@ -137,7 +146,6 @@ void FastLED_loop(){
       fill_solid(leds1,NUM_LEDS1,CRGB(main_color));
       fill_solid(leds2,NUM_LEDS2,CRGB(main_color));
       FastLED.show();
-      SinceOn = millis();
      }
     else{
       fill_solid(leds1,NUM_LEDS1,CRGB::Black);
@@ -249,11 +257,13 @@ void loop(){
     refresh_timers();
   }
 
-  if ((SinceOn + 120000 < millis()) and IS_ON and !NEED_REFRESH)//120000
+  if ((SinceOn + Delay_to_PowerOff < millis()) and IS_ON and !NEED_REFRESH and (SinceOn!=-1))//120000
   {
     IS_ON = 0;
     NEED_REFRESH = 1;
+    Delay_to_PowerOff = 3600000;
   }
+  
   count++;
   ActualCycleTime = millis();
 }
