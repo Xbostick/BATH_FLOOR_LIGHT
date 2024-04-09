@@ -146,6 +146,7 @@ void FastLED_loop(){
       fill_solid(leds1,NUM_LEDS1,CRGB(main_color));
       fill_solid(leds2,NUM_LEDS2,CRGB(main_color));
       FastLED.show();
+      SinceOn = millis(); // Тут косяк. При смене цвета таймер заново начинается. Нужно поправить
      }
     else{
       fill_solid(leds1,NUM_LEDS1,CRGB::Black);
