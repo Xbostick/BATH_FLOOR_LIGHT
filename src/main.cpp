@@ -50,10 +50,10 @@ long Delay_to_PowerOff = 3600000;
 /* All debug defines here*/
 #if DEBUG 
 
-#endif
-
 void DistanceSensor_setup();
 void DistanceSensor_loop();
+
+#endif
 
 void debug_setup(){
   //DistanceSensor_setup();
@@ -93,6 +93,8 @@ void handle_index(){
       main_color = HttpServer.arg("color").toInt();
       Serial.println(main_color);
       NEED_REFRESH = true;
+      sprintf(main_color_str, "#%x", main_color);
+      Serial.println(main_color_str);
     }  
 
   if (HttpServer.hasArg("plain") and RDY2USE){
@@ -165,33 +167,6 @@ void FastLED_loop(){
     }
 }
 
-void DistanceSensor_setup(){
-  pinMode(DistanceSensorTrigPin, OUTPUT);
-  pinMode(DistanceSensorEchoPin, INPUT); 
-}
-
-void DistanceSensor_loop(){
-  if ((ActualCycleTime - DistanceSensorTimeTicker > DistanceSensorInterval_ms) 
-  and (ActualCycleTime - DistanceSensorTimeDelay  > DistanceSensorPause_ms)){
-    DistanceSensorTimeTicker = ActualCycleTime;
-    digitalWrite(DistanceSensorTrigPin, HIGH);
-    delayMicroseconds(20);
-    digitalWrite(DistanceSensorTrigPin, LOW);
-
-    float distance = ( pulseIn(DistanceSensorEchoPin, HIGH)*.0343)/2;
-    Serial.print("Distance: ");
-    Serial.println(distance);
-
-    if (distance < DistanceSensorDistance_sm){
-       IS_ON = !IS_ON;
-       NEED_REFRESH = 1;
-       Serial.print("power change");
-       DistanceSensorTimeDelay =  ActualCycleTime;
-      }
-  }
-    
-}
-
 void refresh_timers(){
   DistanceSensorTimeTicker = 0;
   DistanceSensorTimeDelay = 0;
@@ -253,12 +228,6 @@ void loop(){
     digitalWrite(LED,0);
     DisableSafeMode();
   };
-    
-  // if ((DEBUG) and ActualCycleTime > debug_timer1 + 1000*5){
-  //   debug_timer1 = ActualCycleTime;
-  //   debug_loop();
-  // } 
-  
 
   if (ActualCycleTime > millis())
   {
