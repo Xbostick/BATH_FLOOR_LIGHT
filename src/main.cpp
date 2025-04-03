@@ -48,7 +48,7 @@ long Delay_to_PowerOff = 3600000;
 
 #define DEBUG 0
 /* All debug defines here*/
-#if DEBUG
+#if DEBUG 
 
 #endif
 
@@ -87,7 +87,13 @@ void handle_index(){
       SinceOn = millis();
       Delay_to_PowerOff = HttpServer.arg("auto_power_on").toInt();
       Serial.println(Delay_to_PowerOff);
-    } 
+    }
+    if (HttpServer.hasArg("color")){
+      Serial.print("color changed via request");
+      main_color = HttpServer.arg("color").toInt();
+      Serial.println(main_color);
+      NEED_REFRESH = true;
+    }  
 
   if (HttpServer.hasArg("plain") and RDY2USE){
     NEED_REFRESH = 1;
@@ -104,8 +110,9 @@ void handle_index(){
       const char* color_str = object["color"];
       strcpy(main_color_str,color_str);
       Serial.print("color change to ");
-      Serial.println(main_color_str);
       main_color = str_to_uint32_t(main_color_str);
+      Serial.println(main_color_str);
+      Serial.println(main_color);
     } 
   }
 
