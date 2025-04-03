@@ -43,17 +43,25 @@ unsigned long ActualCycleTime;
 CRGB leds1[NUM_LEDS1];
 CRGB leds2[NUM_LEDS2];
 
+long SinceOn = -1;
+long Delay_to_PowerOff = 3600000;
+
 #define DEBUG 0
 /* All debug defines here*/
+#if DEBUG 
+
 void DistanceSensor_setup();
 void DistanceSensor_loop();
 
+#endif
+
 void debug_setup(){
-  DistanceSensor_setup();
+  //DistanceSensor_setup();
 } 
 
 void debug_loop(){
-  DistanceSensor_loop();
+  //DistanceSensor_loop();
+ 
 }
 //Тут находится реализация датчика дистанции. Пока что кинут в дебаг, тк на рабочей версии нет датчика)
 /*end*/
@@ -71,7 +79,23 @@ void handle_index(){
       Serial.print("power changed");
       IS_ON = !IS_ON;
       NEED_REFRESH = true;
-    } 
+    }
+  if (HttpServer.hasArg("auto_power_on")){
+      Serial.print("power changed via auto_power_on to");
+      IS_ON = 1;
+      NEED_REFRESH = true;
+      SinceOn = millis();
+      Delay_to_PowerOff = HttpServer.arg("auto_power_on").toInt();
+      Serial.println(Delay_to_PowerOff);
+    }
+    if (HttpServer.hasArg("color")){
+      Serial.print("color changed via request");
+      main_color = HttpServer.arg("color").toInt();
+      Serial.println(main_color);
+      NEED_REFRESH = true;
+      sprintf(main_color_str, "#%x", main_color);
+      Serial.println(main_color_str);
+    }  
 
   if (HttpServer.hasArg("plain") and RDY2USE){
     NEED_REFRESH = 1;
@@ -88,8 +112,9 @@ void handle_index(){
       const char* color_str = object["color"];
       strcpy(main_color_str,color_str);
       Serial.print("color change to ");
-      Serial.println(main_color_str);
       main_color = str_to_uint32_t(main_color_str);
+      Serial.println(main_color_str);
+      Serial.println(main_color);
     } 
   }
 
@@ -130,6 +155,7 @@ void FastLED_loop(){
       fill_solid(leds1,NUM_LEDS1,CRGB(main_color));
       fill_solid(leds2,NUM_LEDS2,CRGB(main_color));
       FastLED.show();
+      SinceOn = millis(); // Тут косяк. При смене цвета таймер заново начинается. Нужно поправить
      }
     else{
       fill_solid(leds1,NUM_LEDS1,CRGB::Black);
@@ -139,33 +165,6 @@ void FastLED_loop(){
     webSocketBroadcastStatus();
     NEED_REFRESH = 0;
     }
-}
-
-void DistanceSensor_setup(){
-  pinMode(DistanceSensorTrigPin, OUTPUT);
-  pinMode(DistanceSensorEchoPin, INPUT); 
-}
-
-void DistanceSensor_loop(){
-  if ((ActualCycleTime - DistanceSensorTimeTicker > DistanceSensorInterval_ms) 
-  and (ActualCycleTime - DistanceSensorTimeDelay  > DistanceSensorPause_ms)){
-    DistanceSensorTimeTicker = ActualCycleTime;
-    digitalWrite(DistanceSensorTrigPin, HIGH);
-    delayMicroseconds(20);
-    digitalWrite(DistanceSensorTrigPin, LOW);
-
-    float distance = ( pulseIn(DistanceSensorEchoPin, HIGH)*.0343)/2;
-    // Serial.print("Distance: ");
-    // Serial.println(distance);
-
-    if (distance < DistanceSensorDistance_sm){
-       IS_ON = !IS_ON;
-       NEED_REFRESH = 1;
-       Serial.print("power change");
-       DistanceSensorTimeDelay =  ActualCycleTime;
-      }
-  }
-    
 }
 
 void refresh_timers(){
@@ -213,12 +212,13 @@ void loop(){
     }
 
   if (RDY2USE){
-    if (count % 50000 == 0){ // для функций, который не должны крутиться постоянно
+    if (ActualCycleTime % 500 == 0){ // для функций, который не должны крутиться постоянно
       FastLED_loop();
     }
     if (count % 2 == 0){
       webSocket_loop();
     }
+    //if (DEBUG and (count % 20 == 0)) debug_loop();
   }
 
   if ((ActualCycleTime > 30000) and SAFEMODE) {
@@ -228,14 +228,19 @@ void loop(){
     digitalWrite(LED,0);
     DisableSafeMode();
   };
-    
-  if (DEBUG) debug_loop();
 
   if (ActualCycleTime > millis())
   {
     refresh_timers();
   }
 
+  if ((SinceOn + Delay_to_PowerOff < millis()) and IS_ON and !NEED_REFRESH and (SinceOn!=-1))//120000
+  {
+    IS_ON = 0;
+    NEED_REFRESH = 1;
+    Delay_to_PowerOff = 3600000;
+  }
+  
   count++;
   ActualCycleTime = millis();
 }

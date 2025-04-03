@@ -11,7 +11,8 @@
         "initializer_list": "cpp",
         "ranges": "cpp",
         "typeinfo": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "ratio": "cpp"
     },
     "cmake.sourceDirectory": "C:/work/BATH_FLOOR_LIGHT/.pio/libdeps/nodemcuv2/FastLED"
 }
